@@ -1,9 +1,9 @@
 import torch
-from mmdet.core.bbox.match_costs.builder import MATCH_COST
+from mmdet.models.task_modules import MATCH_COSTS
 import torch.nn.functional as F
 
 
-@MATCH_COST.register_module()
+@MATCH_COSTS.register_module()
 class BBox3DL1Cost(object):
     """BBox3DL1Cost.
      Args:
@@ -27,8 +27,9 @@ class BBox3DL1Cost(object):
         bbox_cost = torch.cdist(bbox_pred, gt_bboxes, p=1)
         return bbox_cost * self.weight
 
-
-@MATCH_COST.register_module()
+'''
+TODO: compare this implementation and mmdet implementation
+@MATCH_COSTS.register_module()
 class DiceCost(object):
     """IoUCost.
 
@@ -80,3 +81,4 @@ class DiceCost(object):
         c = torch.sum(target * target, -1) + 0.001
         d = (2 * a) / (b + c)
         return (1 - d) * self.weight
+'''
