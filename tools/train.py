@@ -9,22 +9,25 @@ import copy
 import os
 import time
 import warnings
-from mmcv import Config, DictAction
-from mmcv.runner import get_dist_info, init_dist
+from mmengine.config import Config, DictAction
+from mmengine.dist import get_dist_info, init_dist
 from os import path as osp
 
 from mmdet import __version__ as mmdet_version
 from mmdet3d import __version__ as mmdet3d_version
 
-from mmdet3d.datasets import build_dataset
-from mmdet3d.models import build_model
-from mmdet3d.utils import collect_env, get_root_logger
-from mmdet.apis import set_random_seed
+from mmdet3d.registry import DATASETS, MODELS
+from mmengine.logging import MMLogger
+from mmdet3d.utils import collect_env
+from mmengine.runner import set_random_seed
 from mmseg import __version__ as mmseg_version
 
 warnings.filterwarnings("ignore")
 
-from mmcv.utils import TORCH_VERSION, digit_version
+
+from mmengine.utils.dl_utils import TORCH_VERSION
+
+from mmengine.utils.version_utils import digit_version
 
 
 def parse_args():
@@ -119,16 +122,17 @@ def main():
 
                 for m in _module_dir[1:]:
                     _module_path = _module_path + '.' + m
-                print(_module_path)
+                    print(_module_path)
                 plg_lib = importlib.import_module(_module_path)
             else:
                 # import dir is the dirpath for the config file
                 _module_dir = os.path.dirname(args.config)
+                print("_module_dir: ".format(_module_dir))
                 _module_dir = _module_dir.split('/')
                 _module_path = _module_dir[0]
                 for m in _module_dir[1:]:
                     _module_path = _module_path + '.' + m
-                print(_module_path)
+                    print(_module_path)
                 plg_lib = importlib.import_module(_module_path)
 
             from projects.mmdet3d_plugin.uniad.apis.train import custom_train_model
@@ -181,7 +185,7 @@ def main():
         logger_name = 'mmseg'
     else:
         logger_name = 'mmdet'
-    logger = get_root_logger(
+    logger = MMLogger.get_current_instance(
         log_file=log_file, log_level=cfg.log_level, name=logger_name)
 
     # init the meta dict to record some important information such as
@@ -209,14 +213,14 @@ def main():
     meta['seed'] = args.seed
     meta['exp_name'] = osp.basename(args.config)
 
-    model = build_model(
+    model = MODELS.build(
         cfg.model,
         train_cfg=cfg.get('train_cfg'),
         test_cfg=cfg.get('test_cfg'))
     model.init_weights()
 
     logger.info(f'Model:\n{model}')
-    datasets = [build_dataset(cfg.data.train)]
+    datasets = [DATASETS.build(cfg.data.test)]
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)
         # in case we use a dataset wrapper
@@ -228,7 +232,7 @@ def main():
         # which do not affect AP/AR calculation later
         # refer to https://mmdetection3d.readthedocs.io/en/latest/tutorials/customize_runtime.html#customize-workflow  # noqa
         val_dataset.test_mode = False
-        datasets.append(build_dataset(val_dataset))
+        datasets.append(DATASETS.build(cfg.data.test))
     if cfg.checkpoint_config is not None:
         # save mmdet version, config file content and class names in
         # checkpoints as meta data
