@@ -8,10 +8,8 @@ import os.path as osp
 
 import mmcv
 import torch.distributed as dist
-from mmcv.runner import DistEvalHook as BaseDistEvalHook
-from mmcv.runner import EvalHook as BaseEvalHook
+from mmengine.hooks import Hook #TODO check that HOOK have the same behaviour like DistEvalHook and BaseEvalHook
 from torch.nn.modules.batchnorm import _BatchNorm
-from mmdet.core.evaluation.eval_hooks import DistEvalHook
 
 
 def _calc_dynamic_intervals(start_interval, dynamic_interval_list):
@@ -26,7 +24,7 @@ def _calc_dynamic_intervals(start_interval, dynamic_interval_list):
     return dynamic_milestones, dynamic_intervals
 
 
-class CustomDistEvalHook(BaseDistEvalHook):
+class CustomDistEvalHook(Hook):
 
     def __init__(self, *args, dynamic_intervals=None,  **kwargs):
         super(CustomDistEvalHook, self).__init__(*args, **kwargs)
