@@ -1,15 +1,13 @@
 
 # Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
-from mmcv.parallel import DataContainer as DC
+from mmengine.structures.base_data_element import BaseDataElement as DC #TODO check that it's correct replace https://github.com/open-mmlab/mmcv/pull/2216#issuecomment-1754875721
 
-from mmdet3d.core.bbox import BaseInstance3DBoxes
-from mmdet3d.core.points import BasePoints
-from mmdet.datasets.builder import PIPELINES
-from mmdet.datasets.pipelines import to_tensor
+from mmdet.registry import TRANSFORMS
+from mmcv.transforms import to_tensor
 from mmdet3d.datasets.pipelines import DefaultFormatBundle3D
 
-@PIPELINES.register_module()
+@TRANSFORMS.register_module()
 class CustomDefaultFormatBundle3D(DefaultFormatBundle3D):
     """Default formatting bundle.
     It simplifies the pipeline of formatting common fields for voxels,
