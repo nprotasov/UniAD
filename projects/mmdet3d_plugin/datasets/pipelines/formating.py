@@ -5,10 +5,10 @@ from mmengine.structures.base_data_element import BaseDataElement as DC #TODO ch
 
 from mmdet.registry import TRANSFORMS
 from mmcv.transforms import to_tensor
-from mmdet3d.datasets.pipelines import DefaultFormatBundle3D
+from mmdet3d.datasets.transforms.formating import Pack3DDetInputs #TODO not sure in it: https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/notes/compatibility.md
 
 @TRANSFORMS.register_module()
-class CustomDefaultFormatBundle3D(DefaultFormatBundle3D):
+class CustomDefaultFormatBundle3D(Pack3DDetInputs):
     """Default formatting bundle.
     It simplifies the pipeline of formatting common fields for voxels,
     including "proposals", "gt_bboxes", "gt_labels", "gt_masks" and

@@ -1,11 +1,11 @@
 import numpy as np
 import mmcv
-from mmdet.datasets.builder import PIPELINES
+from mmdet.registry import TRANSFORMS
 from einops import rearrange
-from mmdet3d.datasets.pipelines import LoadAnnotations3D
+from mmdet3d.datasets.transforms.loading import LoadAnnotations3D
 import os
 
-@PIPELINES.register_module()
+@TRANSFORMS.register_module() #TODO check that it's TRANSFORMS 
 class LoadMultiViewImageFromFilesInCeph(object):
     """Load multi channel images from a list of separate channel files.
 
@@ -82,7 +82,7 @@ class LoadMultiViewImageFromFilesInCeph(object):
         return repr_str
 
 
-@PIPELINES.register_module()
+@TRANSFORMS.register_module()  #TODO check that it's TRANSFORMS 
 class LoadAnnotations3D_E2E(LoadAnnotations3D):
     """Load Annotations3D.
 
