@@ -6,12 +6,12 @@ import random
 from functools import partial
 
 import numpy as np
-from mmcv.parallel import collate
-from mmcv.runner import get_dist_info
-from mmcv.utils import Registry, build_from_cfg
+from torch.utils.data import DataLoader, default_collate
+from mmengine.dist  import get_dist_info
+from mmengine.registry import Registry, build_from_cfg
 from torch.utils.data import DataLoader
 
-from mmdet.datasets.samplers import GroupSampler
+from mmdet.datasets.samplers import AspectRatioBatchSampler #TODO check that it's equvivalent
 from projects.mmdet3d_plugin.datasets.samplers.group_sampler import DistributedGroupSampler
 from projects.mmdet3d_plugin.datasets.samplers.distributed_sampler import DistributedSampler
 from projects.mmdet3d_plugin.datasets.samplers.sampler import build_sampler
@@ -72,7 +72,7 @@ def build_dataloader(dataset,
     else:
         # assert False, 'not support in bevformer'
         print('WARNING!!!!, Only can be used for obtain inference speed!!!!')
-        sampler = GroupSampler(dataset, samples_per_gpu) if shuffle else None
+        sampler = AspectRatioBatchSampler(dataset, samples_per_gpu) if shuffle else None
         batch_size = num_gpus * samples_per_gpu
         num_workers = num_gpus * workers_per_gpu
 
@@ -85,7 +85,7 @@ def build_dataloader(dataset,
         batch_size=batch_size,
         sampler=sampler,
         num_workers=num_workers,
-        collate_fn=partial(collate, samples_per_gpu=samples_per_gpu),
+        collate_fn=partial(default_collate, samples_per_gpu=samples_per_gpu),
         pin_memory=False,
         worker_init_fn=init_fn,
         **kwargs)
@@ -103,10 +103,63 @@ def worker_init_fn(worker_id, num_workers, rank, seed):
 
 # Copyright (c) OpenMMLab. All rights reserved.
 import platform
-from mmcv.utils import Registry, build_from_cfg
+from mmengine.registry import Registry, build_from_cfg
 
-from mmdet.datasets import DATASETS
-from mmdet.datasets.builder import _concat_dataset
+from mmengine.registry import DATASETS
+from mmdet.datasets.dataset_wrappers import ConcatDataset
+
+def _concat_dataset(cfg, default_args=None):
+    ann_files = cfg['ann_file']
+    img_prefixes = cfg.get('img_prefix', None)
+    seg_prefixes = cfg.get('seg_prefix', None)
+    proposal_files = cfg.get('proposal_file', None)
+    separate_eval = cfg.get('separate_eval', True)
+
+    datasets = []
+    num_dset = len(ann_files)
+    for i in range(num_dset):
+        data_cfg = copy.deepcopy(cfg)
+        # pop 'separate_eval' since it is not a valid key for common datasets.
+        if 'separate_eval' in data_cfg:
+            data_cfg.pop('separate_eval')
+        data_cfg['ann_file'] = ann_files[i]
+        if isinstance(img_prefixes, (list, tuple)):
+            data_cfg['img_prefix'] = img_prefixes[i]
+        if isinstance(seg_prefixes, (list, tuple)):
+            data_cfg['seg_prefix'] = seg_prefixes[i]
+        if isinstance(proposal_files, (list, tuple)):
+            data_cfg['proposal_file'] = proposal_files[i]
+        datasets.append(build_dataset(data_cfg, default_args))
+
+    return ConcatDataset(datasets, separate_eval)
+
+def build_dataset(cfg, default_args=None):
+    from mmdet3d.datasets.dataset_wrappers import CBGSDataset
+    from mmdet.datasets.dataset_wrappers import (ClassBalancedDataset,
+                                                 ConcatDataset, RepeatDataset, MultiImageMixDataset)
+    if isinstance(cfg, (list, tuple)):
+        dataset = ConcatDataset([build_dataset(c, default_args) for c in cfg])
+    elif cfg['type'] == 'ConcatDataset':
+        dataset = ConcatDataset(
+            [build_dataset(c, default_args) for c in cfg['datasets']],
+            cfg.get('separate_eval', True))
+    elif cfg['type'] == 'RepeatDataset':
+        dataset = RepeatDataset(
+            build_dataset(cfg['dataset'], default_args), cfg['times'])
+    elif cfg['type'] == 'ClassBalancedDataset':
+        dataset = ClassBalancedDataset(
+            build_dataset(cfg['dataset'], default_args), cfg['oversample_thr'])
+    elif cfg['type'] == 'MultiImageMixDataset':
+        cp_cfg = copy.deepcopy(cfg)
+        cp_cfg['dataset'] = build_dataset(cp_cfg['dataset'])
+        cp_cfg.pop('type')
+        dataset = MultiImageMixDataset(**cp_cfg)
+    elif isinstance(cfg.get('ann_file'), (list, tuple)):
+        dataset = _concat_dataset(cfg, default_args)
+    else:
+        dataset = build_from_cfg(cfg, DATASETS, default_args)
+
+    return dataset
 
 if platform.system() != 'Windows':
     # https://github.com/pytorch/pytorch/issues/973
