@@ -8,10 +8,10 @@ import copy
 import numpy as np
 import torch
 import mmcv
-from mmdet.datasets import DATASETS
-from mmdet.datasets.pipelines import to_tensor
+from mmengine.registry import DATASETS #TODO not sure, that it is equvivalent
+from mmcv.transforms import to_tensor
 from mmdet3d.datasets import NuScenesDataset
-from mmdet3d.core.bbox import LiDARInstance3DBoxes
+from mmdet3d.structures import LiDARInstance3DBoxes
 
 from os import path as osp
 from nuscenes.eval.common.utils import quaternion_yaw, Quaternion
@@ -20,7 +20,8 @@ from nuscenes.eval.tracking.evaluate import TrackingEval
 from .eval_utils.nuscenes_eval_motion import MotionEval
 from nuscenes.eval.common.config import config_factory
 import tempfile
-from mmcv.parallel import DataContainer as DC
+#from mmcv import DataContainer as DC
+from mmengine.structures.base_data_element import BaseDataElement as DC#TODO check that it's correct replace https://github.com/open-mmlab/mmcv/pull/2216#issuecomment-1754875721
 import random
 import pickle
 from prettytable import PrettyTable
