@@ -10,7 +10,7 @@ from torch import nn, Tensor
 from functools import partial
 from mmdet.registry import TRANSFORMS
 import math
-from mmcv.runner import force_fp32
+# from mmcv.runner import force_fp32
 
 count = 0
 
@@ -32,7 +32,7 @@ class Mlp(nn.Module):
         self.fc2 = nn.Linear(hidden_features, out_features)
         self.drop = nn.Dropout(drop)
 
-    @force_fp32(apply_to=('x', ))
+    # @force_fp32(apply_to=('x', ))
     def forward(self, x):
         x = self.fc1(x)
         x = self.act(x)
@@ -62,7 +62,7 @@ class SelfAttention(nn.Module):
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    @force_fp32(apply_to=('x', ))
+    # @force_fp32(apply_to=('x', ))
     def forward(self, x):
         B, N, C = x.shape
 
@@ -118,7 +118,7 @@ class Attention(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    @force_fp32(apply_to=('query', 'key', 'value'))
+    # @force_fp32(apply_to=('query', 'key', 'value'))
     def forward(self, query, key, value, key_padding_mask, hw_lvl):
         B, N, C = query.shape
         _, L, _ = key.shape
@@ -188,7 +188,7 @@ class AttentionTail(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    @force_fp32(apply_to=('query', 'key'))
+    # @force_fp32(apply_to=('query', 'key'))
     def forward(self, query, key, key_padding_mask, hw_lvl=None):
         B, N, C = query.shape
         _, L, _ = key.shape
@@ -256,7 +256,7 @@ class Block(nn.Module):
                                                 proj_drop=drop)
             self.norm3 = norm_layer(dim)
 
-    @force_fp32(apply_to=('query', 'key', 'value'))
+    # @force_fp32(apply_to=('query', 'key', 'value'))
     def forward(self, query, key, value, key_padding_mask=None, hw_lvl=None):
         if self.self_attn:
             query = query + self.drop_path(self.self_attention(query))
@@ -301,7 +301,7 @@ class DropPath(nn.Module):
         super(DropPath, self).__init__()
         self.drop_prob = drop_prob
 
-    @force_fp32(apply_to=('x', ))
+    # @force_fp32(apply_to=('x', ))
     def forward(self, x):
         return drop_path(x, self.drop_prob, self.training)
 
@@ -367,8 +367,8 @@ class SegMaskHead(nn.Module):
         else:
             return tensor + pos
         #return tensor if pos is None else tensor + pos
-    @force_fp32(apply_to=('memory', 'mask_memory', 'pos_memory', 'query_embed',
-                          'mask_query', 'pos_query'))
+    # @force_fp32(apply_to=('memory', 'mask_memory', 'pos_memory', 'query_embed',
+    #                       'mask_query', 'pos_query'))
     def forward(self, memory, mask_memory, pos_memory, query_embed, mask_query,
                 pos_query, hw_lvl):
         if mask_memory is not None and isinstance(mask_memory, torch.Tensor):

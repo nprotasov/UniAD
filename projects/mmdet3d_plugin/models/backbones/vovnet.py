@@ -1,6 +1,6 @@
 
 from collections import OrderedDict
-from mmcv.runner import BaseModule
+from mmengine.model.base_module import BaseModule
 from mmdet.models.builder import BACKBONES
 import torch
 import torch.nn as nn

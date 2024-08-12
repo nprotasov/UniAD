@@ -6,9 +6,9 @@
 
 import torch
 import torch.nn as nn
-from mmcv.cnn.bricks.registry import TRANSFORMER_LAYER_SEQUENCE
+from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_transformer_layer
-from mmcv.runner.base_module import BaseModule
+from mmengine.model.base_module import BaseModule
 from projects.mmdet3d_plugin.models.utils.functional import (
     norm_points,
     pos2posemb2d,
@@ -16,7 +16,7 @@ from projects.mmdet3d_plugin.models.utils.functional import (
 )
 
 
-@TRANSFORMER_LAYER_SEQUENCE.register_module()
+@MODELS.register_module()
 class MotionTransformerDecoder(BaseModule):
     """Implements the decoder in DETR3D transformer.
     Args:

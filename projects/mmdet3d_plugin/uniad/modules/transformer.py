@@ -7,20 +7,19 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from mmcv.cnn import xavier_init
+from mmengine.model import xavier_init
 from mmcv.cnn.bricks.transformer import build_transformer_layer_sequence
-from mmcv.runner.base_module import BaseModule
+from mmengine.model.base_module import BaseModule
 
-from mmdet.models.utils.builder import TRANSFORMER
+from mmdet.registry import MODELS
 from torch.nn.init import normal_
-from mmcv.runner.base_module import BaseModule
 from torchvision.transforms.functional import rotate
 from .temporal_self_attention import TemporalSelfAttention
 from .spatial_cross_attention import MSDeformableAttention3D
 from .decoder import CustomMSDeformableAttention
-from mmcv.runner import force_fp32, auto_fp16
+# from mmcv.runner import force_fp32, auto_fp16
 
-@TRANSFORMER.register_module()
+@MODELS.register_module()
 class PerceptionTransformer(BaseModule):
     """Implements the Detr3D transformer.
     Args:
@@ -95,7 +94,7 @@ class PerceptionTransformer(BaseModule):
         normal_(self.cams_embeds)
         xavier_init(self.can_bus_mlp, distribution='uniform', bias=0.)
 
-    @auto_fp16(apply_to=('mlvl_feats', 'bev_queries', 'prev_bev', 'bev_pos'))
+    # @auto_fp16(apply_to=('mlvl_feats', 'bev_queries', 'prev_bev', 'bev_pos'))
     def get_bev_features(
             self,
             mlvl_feats,

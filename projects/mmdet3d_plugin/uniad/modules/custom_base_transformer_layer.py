@@ -9,15 +9,16 @@ import warnings
 
 import torch
 
-from mmcv import ConfigDict
+from mmengine.config import ConfigDict
 from mmcv.cnn import build_norm_layer
-from mmcv.runner.base_module import BaseModule, ModuleList
+from mmengine.model.base_module import BaseModule
+from mmenging.model import ModuleList
 
-from mmcv.cnn.bricks.registry import TRANSFORMER_LAYER
+from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_feedforward_network, build_attention
 
 
-@TRANSFORMER_LAYER.register_module()
+@MODELS.register_module()
 class MyCustomBaseTransformerLayer(BaseModule):
     """Base `TransformerLayer` for vision transformer.
     It can be built from `mmcv.ConfigDict` and support more flexible

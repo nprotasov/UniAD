@@ -9,7 +9,7 @@ from torch import nn
 import torch.utils.checkpoint as checkpoint
 from .utils import calculate_birds_eye_view_parameters
 import torch.nn.functional as F
-from mmcv.runner import BaseModule
+from mmengine.model.base_module import BaseModuleBaseModule
 from mmcv.cnn import ConvModule, build_conv_layer
 from einops import rearrange
 from collections import OrderedDict

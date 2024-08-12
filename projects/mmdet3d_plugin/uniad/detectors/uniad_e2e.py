@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------------#
 
 import torch
-from mmcv.runner import auto_fp16
+# from mmcv.runner import auto_fp16
 from mmdet.models import DETECTORS
 import copy
 import os
@@ -84,7 +84,7 @@ class UniAD(UniADTrack):
         
 
     # Add the subtask loss to the whole model loss
-    @auto_fp16(apply_to=('img', 'points'))
+    # @auto_fp16(apply_to=('img', 'points'))
     def forward_train(self,
                       img=None,
                       img_metas=None,

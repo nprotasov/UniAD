@@ -6,14 +6,15 @@
 
 import torch
 import torch.nn as nn
-from mmdet.models.builder import HEADS, build_loss
+from mmdet.models.builder import build_loss
+from mmdet.registry import MODELS
 from einops import rearrange
 from projects.mmdet3d_plugin.models.utils.functional import bivariate_gaussian_activation
 from .planning_head_plugin import CollisionNonlinearOptimizer
 import numpy as np
 import copy
 
-@HEADS.register_module()
+@MODELS.register_module()
 class PlanningHeadSingleMode(nn.Module):
     def __init__(self,
                  bev_h=200,

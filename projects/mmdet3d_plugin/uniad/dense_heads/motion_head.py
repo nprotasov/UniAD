@@ -6,8 +6,8 @@
 
 import torch
 import copy
-from mmdet.models import HEADS
-from mmcv.runner import force_fp32, auto_fp16
+from mmdet.registry import MODELS
+# from mmcv.runner import force_fp32, auto_fp16
 from projects.mmdet3d_plugin.models.utils.functional import (
     bivariate_gaussian_activation,
     norm_points,
@@ -18,7 +18,7 @@ from .motion_head_plugin.motion_utils import nonlinear_smoother
 from .motion_head_plugin.base_motion_head import BaseMotionHead
 
 
-@HEADS.register_module()
+@MODELS.register_module()
 class MotionHead(BaseMotionHead):
     """
     MotionHead module for a neural network, which predicts motion trajectories and is used in an autonomous driving task.
@@ -208,7 +208,7 @@ class MotionHead(BaseMotionHead):
 
         return traj_results, outs_motion
 
-    @auto_fp16(apply_to=('bev_embed', 'track_query', 'lane_query', 'lane_query_pos', 'lane_query_embed', 'prev_bev'))
+    # @auto_fp16(apply_to=('bev_embed', 'track_query', 'lane_query', 'lane_query_pos', 'lane_query_embed', 'prev_bev'))
     def forward(self, 
                 bev_embed, 
                 track_query, 
@@ -379,7 +379,7 @@ class MotionHead(BaseMotionHead):
             batched_mode_query_pos.append(torch.stack(grouped_mode_query_pos))
         return torch.stack(batched_mode_query_pos)
 
-    @force_fp32(apply_to=('preds_dicts_motion'))
+    # @force_fp32(apply_to=('preds_dicts_motion'))
     def loss(self,
              gt_bboxes_3d,
              gt_fut_traj,
@@ -531,7 +531,7 @@ class MotionHead(BaseMotionHead):
             traj_prob_all, traj_preds_all, gt_fut_traj_all, gt_fut_traj_mask_all)
         return traj_loss, l_class, l_reg, l_minade, l_minfde, l_mr
 
-    @force_fp32(apply_to=('preds_dicts'))
+    # @force_fp32(apply_to=('preds_dicts'))
     def get_trajs(self, preds_dicts, bbox_results):
         """
         Generates trajectories from the prediction results, bounding box results.

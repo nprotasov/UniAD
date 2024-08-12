@@ -7,8 +7,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmdet.models.builder import HEADS, build_loss
-from mmcv.runner import BaseModule
+from mmdet.models.builder import build_loss
+from mmdet.registry import MODELS
+from mmengine.model.base_module import BaseModule
 from einops import rearrange
 from mmdet.core import reduce_mean
 from mmcv.cnn.bricks.transformer import build_transformer_layer_sequence
@@ -19,7 +20,7 @@ from .occ_head_plugin import MLP, BevFeatureSlicer, SimpleConv2d, CVT_Decoder, B
 def _get_clones(module, N):
     return nn.ModuleList([copy.deepcopy(module) for i in range(N)])
 
-@HEADS.register_module()
+@MODELS.register_module()
 class OccHead(BaseModule):
     def __init__(self, 
                  # General

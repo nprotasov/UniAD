@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from mmdet.models.task_modules import BBOX_ASSIGNERS
-from mmdet.models.task_modules.assigners import BaseAssigner
+from mmdet.models.task_modules.assigners.base_assigner import BaseAssigner
 from mmdet.models.task_modules import build_match_cost
 try:
     from scipy.optimize import linear_sum_assignment

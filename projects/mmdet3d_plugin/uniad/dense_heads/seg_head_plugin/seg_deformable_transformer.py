@@ -1,31 +1,28 @@
-from mmcv.runner.fp16_utils import force_fp32
-from mmdet.models.utils.builder import TRANSFORMER
-from mmdet.models.utils import Transformer
+# from mmcv.runner.fp16_utils import force_fp32
+from mmdet.registry import MODELS
+from mmdet.models.detectors.base_detr import DetectionTransformer
 import warnings
 import math
 import copy
 import torch
 import torch.nn as nn
-from mmcv.cnn import build_activation_layer, build_norm_layer, xavier_init
-from mmcv.cnn.bricks.registry import (TRANSFORMER_LAYER,
-                                      TRANSFORMER_LAYER_SEQUENCE)
+from mmcv.cnn import build_activation_layer, build_norm_layer
+from mmengine.model import xavier_init
 from mmcv.cnn.bricks.transformer import (BaseTransformerLayer,
                                          MultiScaleDeformableAttention,
                                          TransformerLayerSequence,
                                          build_transformer_layer_sequence)
-from mmcv.runner.base_module import BaseModule
+from mmengine.model.base_module import BaseModule
 from torch.nn.init import normal_
 
-from mmdet.models.utils.builder import TRANSFORMER
-from mmcv.cnn.bricks.registry import ATTENTION
 from torch import einsum
 
 from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
 
 # Copy-paste from defromable detr in mmdet.
-@TRANSFORMER.register_module()
-class SegDeformableTransformer(Transformer):
+@MODELS.register_module()
+class SegDeformableTransformer(DetectionTransformer):
     """Implements the DeformableDETR transformer.
 
     Args:
@@ -221,7 +218,7 @@ class SegDeformableTransformer(Transformer):
                           dim=4).flatten(2)
         return pos
 
-    @force_fp32(apply_to=('mlvl_feats', 'query_embed', 'mlvl_pos_embeds'))
+    # @force_fp32(apply_to=('mlvl_feats', 'query_embed', 'mlvl_pos_embeds'))
     def forward(self,
                 mlvl_feats,
                 mlvl_masks,

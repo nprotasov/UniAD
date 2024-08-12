@@ -178,7 +178,7 @@ class PansegformerHead(SegDETRHead):
             for m in self.reg_branches:
                 nn.init.constant_(m[-1].bias.data[2:], 0.0)
 
-    @force_fp32(apply_to=('bev_embed', ))
+    # @force_fp32(apply_to=('bev_embed', ))
     def forward(self, bev_embed):
         """Forward function.
 

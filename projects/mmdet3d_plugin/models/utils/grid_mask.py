@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from PIL import Image
-from mmcv.runner import force_fp32, auto_fp16
+# from mmcv.runner import force_fp32, auto_fp16
 
 class Grid(object):
     def __init__(self, use_h, use_w, rotate = 1, offset=False, ratio = 0.5, mode=0, prob = 1.):
@@ -81,7 +81,7 @@ class GridMask(nn.Module):
         self.fp16_enable = False
     def set_prob(self, epoch, max_epoch):
         self.prob = self.st_prob * epoch / max_epoch #+ 1.#0.5
-    @auto_fp16()
+    # @auto_fp16()
     def forward(self, x):
         if np.random.rand() > self.prob or not self.training:
             return x

@@ -12,16 +12,17 @@ import torch.nn as nn
 
 from einops import rearrange, repeat
 from mmcv.ops.multi_scale_deform_attn import multi_scale_deformable_attn_pytorch
-from mmcv.cnn import xavier_init, constant_init
-from mmcv.cnn.bricks.registry import ATTENTION, TRANSFORMER_LAYER
+from mmengine.model import bias_init_with_prob, constant_init, xavier_init, ModuleList, Sequential
+from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_attention, build_feedforward_network, build_norm_layer
 from mmcv.cnn.bricks.drop import build_dropout
-from mmcv.runner.base_module import BaseModule, ModuleList, Sequential
-from mmcv.utils import ConfigDict, deprecated_api_warning
+from mmengine.model.base_module import BaseModule
+from mmengine.config import ConfigDict
+from mmengine.utils import deprecated_api_warning
 from projects.mmdet3d_plugin.uniad.modules.multi_scale_deformable_attn_function import MultiScaleDeformableAttnFunction_fp32
 
 
-@TRANSFORMER_LAYER.register_module()
+@MODELS.register_module()
 class MotionTransformerAttentionLayer(BaseModule):
     """Base `TransformerLayer` for vision transformer.
     It can be built from `mmcv.ConfigDict` and support more flexible
@@ -239,7 +240,7 @@ class MotionTransformerAttentionLayer(BaseModule):
 
         return query
 
-@ATTENTION.register_module()
+@MODELS.register_module()
 class MotionDeformableAttention(BaseModule):
     """An attention module used in Deformable-Detr.
 
@@ -486,7 +487,7 @@ class MotionDeformableAttention(BaseModule):
         out = torch.stack([torch.stack([cy, -sy]), torch.stack([sy, cy])]).permute([2,0,1])
         return out
 
-@ATTENTION.register_module()
+@MODELS.register_module()
 class CustomModeMultiheadAttention(BaseModule):
     """A wrapper for ``torch.nn.MultiheadAttention``.
     This module implements MultiheadAttention with identity connection,

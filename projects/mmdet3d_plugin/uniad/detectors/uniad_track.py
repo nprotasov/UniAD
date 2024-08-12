@@ -6,7 +6,7 @@
 
 import torch
 import torch.nn as nn
-from mmcv.runner import auto_fp16
+# from mmcv.runner import auto_fp16
 from mmdet.models import DETECTORS
 from mmdet3d.core import bbox3d2result
 from mmdet3d.core.bbox.coders import build_bbox_coder
@@ -354,7 +354,7 @@ class UniADTrack(MVXTwoStageDetector):
         assert bev_embed.shape[0] == self.bev_h * self.bev_w
         return bev_embed, bev_pos
 
-    @auto_fp16(apply_to=("img", "prev_bev"))
+    # @auto_fp16(apply_to=("img", "prev_bev"))
     def _forward_single_frame_train(
         self,
         img,
@@ -490,7 +490,7 @@ class UniADTrack(MVXTwoStageDetector):
         out["sdc_embedding"] = sdc_instance.output_embedding[0]
         return out
 
-    @auto_fp16(apply_to=("img", "points"))
+    # @auto_fp16(apply_to=("img", "points"))
     def forward_track_train(self,
                             img,
                             gt_bboxes_3d,
