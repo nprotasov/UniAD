@@ -19,7 +19,8 @@ from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import TransformerLayerSequence
 import math
 from mmengine.model.base_module import BaseModule
-from mmcv.utils import (build_from_cfg, to_2tuple)
+from mmengine.utils import to_2tuple
+from mmengine.registry import build_from_cfg
 from mmengine.utils import deprecated_api_warning
 from mmengine.config import ConfigDict
 

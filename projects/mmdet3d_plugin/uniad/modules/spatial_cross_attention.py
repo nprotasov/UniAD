@@ -10,8 +10,7 @@ import warnings
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import constant_init
-from mmengine.model import xavier_init, ModuleList, Sequential
+from mmengine.model import xavier_init, ModuleList, Sequential, constant_init
 from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_attention
 import math

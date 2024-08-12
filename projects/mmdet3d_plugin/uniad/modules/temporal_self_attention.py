@@ -9,8 +9,7 @@ from mmcv.ops.multi_scale_deform_attn import multi_scale_deformable_attn_pytorch
 import warnings
 import torch
 import torch.nn as nn
-from mmengine.model import constant_init
-from mmengine.model import xavier_init, ModuleList, Sequential
+from mmengine.model import xavier_init, ModuleList, Sequential, constant_init
 from mmdet.registry import MODELS
 import math
 from mmengine.model.base_module import BaseModule
