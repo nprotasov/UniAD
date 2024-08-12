@@ -9,18 +9,18 @@ import copy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import Linear, bias_init_with_prob, constant_init
-from mmcv.runner import force_fp32, auto_fp16
-from mmdet.core import multi_apply
-from mmdet.models.utils.transformer import inverse_sigmoid
-from mmdet.models.builder import HEADS, build_loss
-from mmdet.core import (bbox_cxcywh_to_xyxy, bbox_xyxy_to_cxcywh,
-                        build_assigner, build_sampler, multi_apply,
-                        reduce_mean)
-from mmdet.models.utils import build_transformer
+from mmcv.cnn import Linear
+from mmengine.model import bias_init_with_prob, constant_init
+# from mmcv.runner import force_fp32, auto_fp16
+from mmdet.models.utils.misc import multi_apply 
+from mmdet.models.layers.transformer import inverse_sigmoid
+from mmdet.registry import MODELS
+from mmdet.structures.bbox import bbox_cxcywh_to_xyxy, bbox_xyxy_to_cxcywh
+from mmdet.models.task_modules.builder import build_assigner, build_sampler
+from mmdet.utils import reduce_mean
 from .seg_head_plugin import SegDETRHead, IOU
 
-@HEADS.register_module()
+@MODELS.register_module()
 class PansegformerHead(SegDETRHead):
     """
     Head of Panoptic SegFormer
@@ -113,9 +113,9 @@ class PansegformerHead(SegDETRHead):
                     3  # Depends on GPU memory, setting it to 1, model can be trained on 1080Ti
                 ), )
 
-        self.loss_mask = build_loss(loss_mask)
-        self.things_mask_head = build_transformer(thing_transformer_head)
-        self.stuff_mask_head = build_transformer(stuff_transformer_head)
+        self.loss_mask = MODELS.build(loss_mask)
+        self.things_mask_head = MODELS.build(thing_transformer_head)
+        self.stuff_mask_head = MODELS.build(stuff_transformer_head)
         self.count = 0
 
     def _init_layers(self):
@@ -276,8 +276,8 @@ class PansegformerHead(SegDETRHead):
         
         return outs
 
-    @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list',
-                          'args_tuple', 'reference'))
+    # @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list',
+    #                       'args_tuple', 'reference'))
     def loss(
         self,
         all_cls_scores,
@@ -1060,7 +1060,7 @@ class PansegformerHead(SegDETRHead):
         return bbox_list
 
 
-    @auto_fp16(apply_to=("bev_feat", "prev_bev"))
+    # @auto_fp16(apply_to=("bev_feat", "prev_bev"))
     def forward_train(self,
                           bev_feat=None,
                           img_metas=None,
@@ -1134,8 +1134,8 @@ class PansegformerHead(SegDETRHead):
 
         return bbox_index, det_bboxes, det_labels
 
-    @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list',
-                          'args_tuple'))
+    # @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list',
+    #                       'args_tuple'))
     def get_bboxes(
         self,
         all_cls_scores,

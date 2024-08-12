@@ -8,7 +8,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn, Tensor
 from functools import partial
-from mmdet.models.utils.builder import TRANSFORMER
+from mmdet.registry import TRANSFORMS
 import math
 from mmcv.runner import force_fp32
 
@@ -306,7 +306,7 @@ class DropPath(nn.Module):
         return drop_path(x, self.drop_prob, self.training)
 
 
-@TRANSFORMER.register_module()
+@TRANSFORMS.register_module()
 class SegMaskHead(nn.Module):
     def __init__(self,
                  cfg=None,

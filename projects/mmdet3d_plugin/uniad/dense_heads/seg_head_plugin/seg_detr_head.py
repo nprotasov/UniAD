@@ -3,18 +3,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import Conv2d, Linear, build_activation_layer
 from mmcv.cnn.bricks.transformer import FFN, build_positional_encoding
-from mmcv.runner import force_fp32
+# from mmcv.runner import force_fp32
 
-from mmdet.core import (bbox_cxcywh_to_xyxy, bbox_xyxy_to_cxcywh,
-                        build_assigner, build_sampler, multi_apply,
-                        reduce_mean)
-from mmdet.models.utils import build_transformer
+from mmdet.models.utils.misc import multi_apply
+from mmdet.structures.bbox import bbox_cxcywh_to_xyxy, bbox_xyxy_to_cxcywh
+from mmdet.models.task_modules.builder import build_assigner, build_sampler
+from mmdet.utils import reduce_mean
+
+from mmdet.registry import MODELS
 
 from mmdet.models.dense_heads.anchor_free_head import AnchorFreeHead
-from mmdet.models.builder import HEADS, build_loss
 
 
-@HEADS.register_module()
+@MODELS.register_module()
 class SegDETRHead(
         AnchorFreeHead
 ):  # I modify DETRHead to make it to support panoptic segmentation
@@ -130,9 +131,9 @@ class SegDETRHead(
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
         self.fp16_enabled = False
-        self.loss_cls = build_loss(loss_cls)
-        self.loss_bbox = build_loss(loss_bbox)
-        self.loss_iou = build_loss(loss_iou)
+        self.loss_cls = MODELS.build(loss_cls)
+        self.loss_bbox = MODELS.build(loss_bbox)
+        self.loss_iou = MODELS.build(loss_iou)
 
         if self.loss_cls.use_sigmoid:
             self.cls_out_channels = num_things_classes
@@ -143,7 +144,7 @@ class SegDETRHead(
         self.activate = build_activation_layer(self.act_cfg)
         self.positional_encoding = build_positional_encoding(
             positional_encoding)
-        self.transformer = build_transformer(transformer)
+        self.transformer = MODELS.build(transformer)
         self.embed_dims = self.transformer.embed_dims
         assert 'num_feats' in positional_encoding
         num_feats = positional_encoding['num_feats']
@@ -266,7 +267,7 @@ class SegDETRHead(
             self.reg_ffn(outs_dec))).sigmoid()
         return all_cls_scores, all_bbox_preds
 
-    @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list'))
+    # @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list'))
     def loss(self,
              all_cls_scores_list,
              all_bbox_preds_list,
@@ -585,7 +586,7 @@ class SegDETRHead(
         losses = self.loss(*loss_inputs, gt_bboxes_ignore=gt_bboxes_ignore)
         return losses
 
-    @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list'))
+    # @force_fp32(apply_to=('all_cls_scores_list', 'all_bbox_preds_list'))
     def get_bboxes(self,
                    all_cls_scores_list,
                    all_bbox_preds_list,

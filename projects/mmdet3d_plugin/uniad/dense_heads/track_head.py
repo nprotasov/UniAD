@@ -11,18 +11,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import Linear
 from mmengine.model import bias_init_with_prob
-from mmcv.utils import TORCH_VERSION, digit_version
+from mmengine.utils.dl_utils import TORCH_VERSION
+from mmengine.utils.version_utils import digit_version
 
-from mmdet.core import (multi_apply, multi_apply, reduce_mean)
-from mmdet.models.utils.transformer import inverse_sigmoid
-from mmdet.models import HEADS
+from mmdet.models.utils.misc import multi_apply 
+from mmdet.utils.dist_utils import reduce_mean
+from mmdet.models.layers.transformer import inverse_sigmoid
+from mmdet.registry import MODELS
 from mmdet.models.dense_heads import DETRHead
-from mmdet3d.core.bbox.coders import build_bbox_coder
+from mmdet3d.models.task_modules.builder import build_bbox_coder
 from projects.mmdet3d_plugin.core.bbox.util import normalize_bbox
-from mmcv.runner import force_fp32, auto_fp16
+# from mmcv.runner import force_fp32
 
 
-@HEADS.register_module()
+@MODELS.register_module()
 class BEVFormerTrackHead(DETRHead):
     """Head of Detr3D.
     Args:
@@ -414,7 +416,7 @@ class BEVFormerTrackHead(DETRHead):
         loss_bbox = torch.nan_to_num(loss_bbox)
         return loss_cls, loss_bbox
 
-    @force_fp32(apply_to=('preds_dicts'))
+    # @force_fp32(apply_to=('preds_dicts'))
     def loss(self,
              gt_bboxes_list,
              gt_labels_list,
@@ -501,7 +503,7 @@ class BEVFormerTrackHead(DETRHead):
             num_dec_layer += 1
         return loss_dict
 
-    @force_fp32(apply_to=('preds_dicts'))
+    # @force_fp32(apply_to=('preds_dicts'))
     def get_bboxes(self, preds_dicts, img_metas, rescale=False):
         """Generate bboxes from bbox head predictions.
         Args:
