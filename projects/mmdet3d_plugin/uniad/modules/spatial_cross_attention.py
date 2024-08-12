@@ -10,8 +10,7 @@ import warnings
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import constant_init
-from mmengine.model import xavier_init, ModuleList, Sequential
+from mmengine.model import constant_init
 from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_attention
 import math
@@ -20,8 +19,7 @@ import math
 from mmengine.model.base_module import BaseModule
 
 from mmcv.utils import ext_loader
-from .multi_scale_deformable_attn_function import MultiScaleDeformableAttnFunction_fp32, \
-    MultiScaleDeformableAttnFunction_fp16
+from .multi_scale_deformable_attn_function import MultiScaleDeformableAttnFunction_fp32
 ext_module = ext_loader.load_ext(
     '_ext', ['ms_deform_attn_backward', 'ms_deform_attn_forward'])
 
