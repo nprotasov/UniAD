@@ -19,14 +19,10 @@ from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import TransformerLayerSequence
 import math
 from mmengine.model.base_module import BaseModule
-from mmengine.utils import to_2tuple
-from mmengine.registry import build_from_cfg
 from mmengine.utils import deprecated_api_warning
-from mmengine.config import ConfigDict
 
 from mmcv.utils import ext_loader
-from .multi_scale_deformable_attn_function import MultiScaleDeformableAttnFunction_fp32, \
-    MultiScaleDeformableAttnFunction_fp16
+from .multi_scale_deformable_attn_function import MultiScaleDeformableAttnFunction_fp32
 
 ext_module = ext_loader.load_ext(
     '_ext', ['ms_deform_attn_backward', 'ms_deform_attn_forward'])
