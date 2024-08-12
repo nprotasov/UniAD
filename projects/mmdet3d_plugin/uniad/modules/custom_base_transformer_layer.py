@@ -12,7 +12,7 @@ import torch
 from mmengine.config import ConfigDict
 from mmcv.cnn import build_norm_layer
 from mmengine.model.base_module import BaseModule
-from mmenging.model import ModuleList
+from mmengine.model import ModuleList
 
 from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_feedforward_network, build_attention
