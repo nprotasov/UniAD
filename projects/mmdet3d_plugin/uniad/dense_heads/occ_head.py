@@ -7,11 +7,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmdet.models.builder import build_loss
+from mmseg.models import build_loss
 from mmdet.registry import MODELS
 from mmengine.model.base_module import BaseModule
 from einops import rearrange
-from mmdet.core import reduce_mean
+from mmdet.utils.dist_utils import reduce_mean
 from mmcv.cnn.bricks.transformer import build_transformer_layer_sequence
 import copy
 from .occ_head_plugin import MLP, BevFeatureSlicer, SimpleConv2d, CVT_Decoder, Bottleneck, UpsamplingAdd, \

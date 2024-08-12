@@ -8,7 +8,7 @@ import torch
 import copy
 import pickle
 import torch.nn as nn
-from mmdet.models import  build_loss
+from mmseg.models import build_loss
 from mmcv.cnn.bricks.transformer import build_transformer_layer_sequence
 
 class BaseMotionHead(nn.Module):
