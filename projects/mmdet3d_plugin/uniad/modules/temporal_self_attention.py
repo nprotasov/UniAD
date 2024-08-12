@@ -9,13 +9,11 @@ from mmcv.ops.multi_scale_deform_attn import multi_scale_deformable_attn_pytorch
 import warnings
 import torch
 import torch.nn as nn
-from mmcv.cnn import constant_init
+from mmengine.model import constant_init
 from mmengine.model import xavier_init, ModuleList, Sequential
 from mmdet.registry import MODELS
 import math
 from mmengine.model.base_module import BaseModule
-from mmcv.utils import (build_from_cfg, to_2tuple)
-from mmengine.config import ConfigDict
 
 from mmcv.utils import ext_loader
 ext_module = ext_loader.load_ext(
