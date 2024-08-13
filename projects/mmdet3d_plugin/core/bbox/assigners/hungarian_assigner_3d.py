@@ -4,7 +4,6 @@ from mmdet.models.task_modules import BBOX_ASSIGNERS
 from mmdet.models.task_modules.assigners.assign_result import AssignResult
 from mmdet.models.task_modules.assigners.base_assigner import BaseAssigner
 from mmdet.models.task_modules import build_match_cost
-from mmdet.models.layers.transformer import inverse_sigmoid
 from projects.mmdet3d_plugin.core.bbox.util import normalize_bbox
 
 try:

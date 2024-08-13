@@ -13,7 +13,7 @@ from mmcv.cnn import Linear
 from mmengine.model import bias_init_with_prob, constant_init
 # from mmcv.runner import force_fp32, auto_fp16
 from mmdet.models.utils.misc import multi_apply 
-from mmdet.models.layers.transformer import inverse_sigmoid
+from mmdet.models.layers.transformer.utils import inverse_sigmoid
 from mmdet.registry import MODELS
 from mmdet.structures.bbox import bbox_cxcywh_to_xyxy, bbox_xyxy_to_cxcywh
 from mmdet.models.task_modules.builder import build_assigner, build_sampler

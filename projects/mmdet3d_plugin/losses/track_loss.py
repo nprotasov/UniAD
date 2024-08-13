@@ -17,7 +17,7 @@ import torch.nn as nn
 from typing import List
 from projects.mmdet3d_plugin.uniad.dense_heads.track_head_plugin import Instances
 from mmdet.core import build_assigner
-from mmdet.models import build_loss
+from mmdet.registry import MODELS
 from mmdet.models.builder import LOSSES
 from mmdet.core import reduce_mean
 from mmdet3d.core.bbox.iou_calculators.iou3d_calculator import (
@@ -90,8 +90,8 @@ class ClipMatcher(nn.Module):
         super().__init__()
         self.num_classes = num_classes
         self.matcher = build_assigner(assigner)
-        self.loss_cls = build_loss(loss_cls)
-        self.loss_bboxes = build_loss(loss_bbox)
+        self.loss_cls = MODELS.build(loss_cls)
+        self.loss_bboxes = MODELS.build(loss_bbox)
         self.loss_predictions = nn.SmoothL1Loss(reduction="none", beta=1.0)
         self.register_buffer("code_weights",
                              torch.tensor(code_weights, requires_grad=False))

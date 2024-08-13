@@ -8,7 +8,7 @@ import torch
 import copy
 import pickle
 import torch.nn as nn
-from mmseg.models import build_loss
+from mmdet.registry import MODELS
 from mmcv.cnn.bricks.transformer import build_transformer_layer_sequence
 
 class BaseMotionHead(nn.Module):
@@ -26,7 +26,7 @@ class BaseMotionHead(nn.Module):
         Returns:
             None
         """
-        self.loss_traj = build_loss(loss_traj)
+        self.loss_traj = MODELS.build(loss_traj)
         self.unflatten_traj = nn.Unflatten(3, (self.predict_steps, 5))
         self.log_softmax = nn.LogSoftmax(dim=2)
 
