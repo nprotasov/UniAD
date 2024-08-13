@@ -11,7 +11,6 @@ import copy
 import os
 from ..dense_heads.seg_head_plugin import IOU
 from .uniad_track import UniADTrack
-from mmdet.models.builder import build_head
 
 @MODELS.register_module()
 class UniAD(UniADTrack):
@@ -35,13 +34,13 @@ class UniAD(UniADTrack):
     ):
         super(UniAD, self).__init__(**kwargs)
         if seg_head:
-            self.seg_head = build_head(seg_head)
+            self.seg_head = MODELS.build(seg_head)
         if occ_head:
-            self.occ_head = build_head(occ_head)
+            self.occ_head = MODELS.build(occ_head)
         if motion_head:
-            self.motion_head = build_head(motion_head)
+            self.motion_head = MODELS.build(motion_head)
         if planning_head:
-            self.planning_head = build_head(planning_head)
+            self.planning_head = MODELS.build(planning_head)
         
         self.task_loss_weight = task_loss_weight
         assert set(task_loss_weight.keys()) == \
