@@ -9,10 +9,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Tuple
 import pickle
-from mmdet.models import LOSSES
+from mmdet.registry import MODELS
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class PlanningLoss(nn.Module):
     def __init__(self, loss_type='L2'):
         super(PlanningLoss, self).__init__()
@@ -26,7 +26,7 @@ class PlanningLoss(nn.Module):
         return torch.sum(err * mask)/(torch.sum(mask) + 1e-5)
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class CollisionLoss(nn.Module):
     def __init__(self, delta=0.5, weight=1.0):
         super(CollisionLoss, self).__init__()

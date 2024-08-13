@@ -10,9 +10,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import Tuple
 
-from mmdet.models import LOSSES
+from mmdet.registry import MODELS
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class TrajLoss(nn.Module):
     """
     MTP loss modified to include variances. Uses MSE for mode selection.

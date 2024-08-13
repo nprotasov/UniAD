@@ -137,7 +137,7 @@ def dice_loss(pred,
     loss = weight_reduce_loss(loss, weight, reduction, avg_factor)
     return loss
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class DiceLossWithMasks(nn.Module):
     def __init__(self,
                  use_sigmoid=True,

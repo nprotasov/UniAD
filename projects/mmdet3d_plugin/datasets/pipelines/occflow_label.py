@@ -4,10 +4,10 @@ import cv2
 
 from projects.mmdet3d_plugin.uniad.dense_heads.occ_head_plugin import calculate_birds_eye_view_parameters
 
-from mmdet.datasets.builder import PIPELINES
+from mmdet.registry import TRANSFORMS
 import os
 
-@PIPELINES.register_module()
+@TRANSFORMS.register_module()
 class GenerateOccFlowLabels(object):
     def __init__(self, grid_conf, ignore_index=255, only_vehicle=True, filter_invisible=True, deal_instance_255=False):
         self.grid_conf = grid_conf
