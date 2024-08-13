@@ -18,7 +18,6 @@ from typing import List
 from projects.mmdet3d_plugin.uniad.dense_heads.track_head_plugin import Instances
 from mmdet.core import build_assigner
 from mmdet.registry import MODELS
-from mmdet.models.builder import LOSSES
 from mmdet.core import reduce_mean
 from mmdet3d.core.bbox.iou_calculators.iou3d_calculator import (
     bbox_overlaps_nearest_3d as iou_3d, )
@@ -58,7 +57,7 @@ def accuracy(output, target, topk=(1, )):
     return res
 
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class ClipMatcher(nn.Module):
     def __init__(
             self,

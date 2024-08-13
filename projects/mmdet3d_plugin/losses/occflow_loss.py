@@ -8,10 +8,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
-from mmdet.models.builder import LOSSES
+from mmdet.registry import MODELS
 from mmdet.models.losses.utils import weight_reduce_loss
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class FieryBinarySegmentationLoss(nn.Module):
     def __init__(self, use_top_k=False, top_k_ratio=1.0, future_discount=1.0, loss_weight=1.0, ignore_index=255):
         super().__init__()

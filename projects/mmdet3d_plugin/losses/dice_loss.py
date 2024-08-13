@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 from mmdet.models.losses.utils import weighted_loss
-from mmdet.models.builder import LOSSES
+from mmdet.registry import MODELS
 
 @weighted_loss
 def dice_loss(input, target,mask=None,eps=0.001):
@@ -21,7 +21,7 @@ def dice_loss(input, target,mask=None,eps=0.001):
     d = (2 * a) / (b + c)
     return 1 - d
 
-@LOSSES.register_module()
+@MODELS.register_module()
 class DiceLoss(nn.Module):
 
     def __init__(self, eps=1e-6, reduction='mean', loss_weight=1.0):
