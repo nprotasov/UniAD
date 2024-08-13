@@ -16,7 +16,7 @@ from mmengine.utils.version_utils import digit_version
 
 from mmdet.models.utils.misc import multi_apply 
 from mmdet.utils.dist_utils import reduce_mean
-from mmdet.models.layers.transformer import inverse_sigmoid
+from mmdet.models.layers.transformer.utils import inverse_sigmoid
 from mmdet.registry import MODELS
 from mmdet.models.dense_heads import DETRHead
 from mmdet3d.models.task_modules.builder import build_bbox_coder

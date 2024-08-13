@@ -6,7 +6,6 @@
 
 import torch
 import torch.nn as nn
-from mmdet.models.builder import build_loss
 from mmdet.registry import MODELS
 from einops import rearrange
 from projects.mmdet3d_plugin.models.utils.functional import bivariate_gaussian_activation
@@ -55,7 +54,7 @@ class PlanningHeadSingleMode(nn.Module):
             nn.ReLU(),
             nn.Linear(embed_dims, planning_steps * 2),
         )
-        self.loss_planning = build_loss(loss_planning)
+        self.loss_planning = MODELS.build(loss_planning)
         self.planning_steps = planning_steps
         self.planning_eval = planning_eval
         
@@ -73,7 +72,7 @@ class PlanningHeadSingleMode(nn.Module):
         self.pos_embed = nn.Embedding(1, embed_dims)
         self.loss_collision = []
         for cfg in loss_collision:
-            self.loss_collision.append(build_loss(cfg))
+            self.loss_collision.append(MODELS.build(cfg))
         self.loss_collision = nn.ModuleList(self.loss_collision)
         
         self.use_col_optim = use_col_optim

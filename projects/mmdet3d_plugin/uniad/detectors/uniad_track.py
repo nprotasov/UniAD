@@ -7,20 +7,18 @@
 import torch
 import torch.nn as nn
 # from mmcv.runner import auto_fp16
-from mmdet.models import DETECTORS
-from mmdet3d.core import bbox3d2result
-from mmdet3d.core.bbox.coders import build_bbox_coder
+from mmdet3d.models.task_modules.builder import build_bbox_coder
 from mmdet3d.models.detectors.mvx_two_stage import MVXTwoStageDetector
 from projects.mmdet3d_plugin.models.utils.grid_mask import GridMask
 import copy
 import math
 from projects.mmdet3d_plugin.core.bbox.util import normalize_bbox
-from mmdet.models import build_loss
+from mmdet.registry import MODELS
 from einops import rearrange
-from mmdet.models.utils.transformer import inverse_sigmoid
+from mmdet.models.layers.transformer.utils import inverse_sigmoid
 from ..dense_heads.track_head_plugin import MemoryBank, QueryInteractionModule, Instances, RuntimeTrackerBase
 
-@DETECTORS.register_module()
+@MODELS.register_module()
 class UniADTrack(MVXTwoStageDetector):
     """UniAD tracking part
     """
@@ -142,7 +140,7 @@ class UniADTrack(MVXTwoStageDetector):
         self.mem_bank_len = (
             0 if self.memory_bank is None else self.memory_bank.max_his_length
         )
-        self.criterion = build_loss(loss_cfg)
+        self.criterion = MODELS.build(loss_cfg)
         self.test_track_instances = None
         self.l2g_r_mat = None
         self.l2g_t = None

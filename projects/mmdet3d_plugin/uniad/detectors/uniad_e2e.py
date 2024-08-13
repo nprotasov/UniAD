@@ -6,14 +6,14 @@
 
 import torch
 # from mmcv.runner import auto_fp16
-from mmdet.models import DETECTORS
+from mmdet.registry import MODELS
 import copy
 import os
 from ..dense_heads.seg_head_plugin import IOU
 from .uniad_track import UniADTrack
 from mmdet.models.builder import build_head
 
-@DETECTORS.register_module()
+@MODELS.register_module()
 class UniAD(UniADTrack):
     """
     UniAD: Unifying Detection, Tracking, Segmentation, Motion Forecasting, Occupancy Prediction and Planning for Autonomous Driving

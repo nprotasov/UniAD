@@ -7,7 +7,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmseg.models import build_loss
+from mmdet.registry import MODELS
 from mmdet.registry import MODELS
 from mmengine.model.base_module import BaseModule
 from einops import rearrange
@@ -157,8 +157,8 @@ class OccHead(BaseModule):
 
         self.aux_loss_weight = aux_loss_weight
 
-        self.loss_dice = build_loss(loss_dice)
-        self.loss_mask = build_loss(loss_mask)
+        self.loss_dice = MODELS.build(loss_dice)
+        self.loss_mask = MODELS.build(loss_mask)
 
         self.pan_eval = pan_eval
         self.test_seg_thresh  = test_seg_thresh
