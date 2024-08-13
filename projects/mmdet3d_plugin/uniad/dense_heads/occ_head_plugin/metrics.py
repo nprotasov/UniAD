@@ -7,9 +7,8 @@
 from typing import Optional
 
 import torch
-from pytorch_lightning.metrics.metric import Metric
-from pytorch_lightning.metrics.functional.classification import stat_scores_multiple_classes
-from pytorch_lightning.metrics.functional.reduction import reduce
+from torchmetrics import Metric
+from torchmetrics.classification import MulticlassStatScores
 
 class IntersectionOverUnion(Metric):
     """Computes intersection-over-union."""
@@ -34,7 +33,7 @@ class IntersectionOverUnion(Metric):
         self.add_state('support', default=torch.zeros(n_classes), dist_reduce_fx='sum')
 
     def update(self, prediction: torch.Tensor, target: torch.Tensor):
-        tps, fps, _, fns, sups = stat_scores_multiple_classes(prediction, target, self.n_classes)
+        tps, fps, _, fns, sups = MulticlassStatScores(prediction, target, self.n_classes) #TODO check that is valid replacement
 
         self.true_positive += tps
         self.false_positive += fps
@@ -67,7 +66,23 @@ class IntersectionOverUnion(Metric):
         if (self.ignore_index is not None) and (0 <= self.ignore_index < self.n_classes):
             scores = torch.cat([scores[:self.ignore_index], scores[self.ignore_index+1:]])
 
-        return reduce(scores, reduction=self.reduction)
+        return self._reduce(scores, reduction=self.reduction)
+
+    def _reduce(self, scores):
+        if self.reduction == 'sum':
+            reduced_value = torch.sum(scores)
+        elif self.reduction == 'mean':
+            reduced_value = torch.mean(scores)
+        elif self.reduction == 'max':
+            reduced_value = torch.max(scores)
+        elif self.reduction == 'min':
+            reduced_value = torch.min(scores)
+        elif self.reduction == 'none':
+            reduced_value = scores
+        else:
+            raise ValueError(f"Unknown reduction type: {self.reduction}")
+
+        return reduced_value
 
 
 class PanopticMetric(Metric):
