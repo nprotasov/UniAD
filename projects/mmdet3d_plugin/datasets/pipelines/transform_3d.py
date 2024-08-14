@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import random
 import mmcv
-from mmdet.registry import TRANSFORMS
+from mmengine.registry import TRANSFORMS
 from mmdet.registry import DATASETS
 from mmengine.structures.base_data_element import BaseDataElement as DC #TODO check that it's correct replace https://github.com/open-mmlab/mmcv/pull/2216#issuecomment-1754875721
 from mmdet3d.datasets import ObjectRangeFilter, ObjectNameFilter

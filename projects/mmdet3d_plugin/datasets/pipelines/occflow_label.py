@@ -4,7 +4,7 @@ import cv2
 
 from projects.mmdet3d_plugin.uniad.dense_heads.occ_head_plugin import calculate_birds_eye_view_parameters
 
-from mmdet.registry import TRANSFORMS
+from mmengine.registry import TRANSFORMS
 import os
 
 @TRANSFORMS.register_module()

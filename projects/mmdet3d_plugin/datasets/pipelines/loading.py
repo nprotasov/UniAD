@@ -1,7 +1,7 @@
 import numpy as np
 import mmcv
 from mmengine.fileio import FileClient
-from mmdet.registry import TRANSFORMS
+from mmengine.registry import TRANSFORMS
 from einops import rearrange
 from mmdet3d.datasets.transforms.loading import LoadAnnotations3D
 import os
