@@ -77,6 +77,8 @@ class NuScenesE2EDataset(NuScenesDataset):
 
         self.is_debug = is_debug
         self.len_debug = len_debug
+        print("ARGS: {}".format(args))
+        print("KWARGS: {}".format(kwargs))
         super().__init__(*args, **kwargs)
         self.queue_length = queue_length
         self.overlap_test = overlap_test

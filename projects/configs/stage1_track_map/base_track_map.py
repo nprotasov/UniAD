@@ -8,7 +8,7 @@ _base_ = ["../_base_/datasets/nus-3d.py",
 # 2. Unfreeze neck and BN
 # --> Reproduced tracking result: AMOTA 0.393
 
-
+print("HELLo")
 # Unfreeze neck and BN, the from-scratch results of stage1 could be reproduced
 plugin = True
 plugin_dir = "projects/mmdet3d_plugin/"
@@ -385,7 +385,7 @@ train_pipeline = [
                                     filter_invisible=False),  # NOTE: Currently vis_token is not in pkl 
 
     dict(type="ObjectRangeFilterTrack", point_cloud_range=point_cloud_range),
-    dict(type="ObjectNameFilterTrack", classes=class_names),
+    dict(type="ObjectNameFilterTrack", metainfo=dict(classes=class_names)),
     dict(type="NormalizeMultiviewImage", **img_norm_cfg),
     dict(type="PadMultiViewImage", size_divisor=32),
     dict(type="DefaultFormatBundle3D", class_names=class_names),
@@ -489,7 +489,7 @@ data = dict(
         data_root=data_root,
         ann_file=ann_file_train,
         pipeline=train_pipeline,
-        classes=class_names,
+        metainfo=dict(classes=class_names),
         modality=input_modality,
         test_mode=False,
         use_valid_flag=True,
@@ -523,7 +523,7 @@ data = dict(
         past_steps=past_steps,
         fut_steps=fut_steps,
         use_nonlinear_optimizer=use_nonlinear_optimizer,
-        classes=class_names,
+        metainfo=dict(classes=class_names),
         modality=input_modality,
         samples_per_gpu=1,
         eval_mod=['det', 'track', 'map'],
@@ -547,7 +547,7 @@ data = dict(
         fut_steps=fut_steps,
         occ_n_future=occ_n_future_max,
         use_nonlinear_optimizer=use_nonlinear_optimizer,
-        classes=class_names,
+        metainfo=dict(classes=class_names),
         modality=input_modality,
         eval_mod=['det', 'map', 'track'],
     ),
@@ -587,3 +587,5 @@ checkpoint_config = dict(interval=1)
 load_from = "ckpts/bevformer_r101_dcn_24ep.pth"
 
 find_unused_parameters = True
+
+print("bye")

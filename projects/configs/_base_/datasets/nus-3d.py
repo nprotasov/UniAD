@@ -111,7 +111,7 @@ data = dict(
         data_root=data_root,
         ann_file=data_root + 'nuscenes_infos_train.pkl',
         pipeline=train_pipeline,
-        classes=class_names,
+        metainfo=dict(classes=class_names),
         modality=input_modality,
         test_mode=False,
         # we use box_type_3d='LiDAR' in kitti and nuscenes dataset
@@ -122,7 +122,7 @@ data = dict(
         data_root=data_root,
         ann_file=data_root + 'nuscenes_infos_val.pkl',
         pipeline=test_pipeline,
-        classes=class_names,
+        metainfo=dict(classes=class_names),
         modality=input_modality,
         test_mode=True,
         box_type_3d='LiDAR'),
@@ -131,7 +131,7 @@ data = dict(
         data_root=data_root,
         ann_file=data_root + 'nuscenes_infos_val.pkl',
         pipeline=test_pipeline,
-        classes=class_names,
+        metainfo=dict(classes=class_names),
         modality=input_modality,
         test_mode=True,
         box_type_3d='LiDAR'))
