@@ -3,7 +3,8 @@ import argparse
 import time
 import torch
 from mmcv import Config
-from mmcv.parallel import MMDataParallel
+from torch.nn.parallel import DataParallel
+
 from mmcv.runner import load_checkpoint, wrap_fp16_model
 import sys
 sys.path.append('.')
@@ -61,8 +62,7 @@ def main():
         load_checkpoint(model, args.checkpoint, map_location='cpu')
     #if args.fuse_conv_bn:
     #    model = fuse_module(model)
-
-    model = MMDataParallel(model, device_ids=[0])
+    model = DataParallel(model, device_ids=[0])
 
     model.eval()
 

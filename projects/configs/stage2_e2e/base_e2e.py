@@ -694,7 +694,7 @@ evaluation = dict(
     pipeline=test_pipeline,
     planning_evaluation_strategy=planning_evaluation_strategy,
 )
-runner = dict(type="EpochBasedRunner", max_epochs=total_epochs)
+runner = dict(type="Runner", max_epochs=total_epochs)
 log_config = dict(
     interval=10, hooks=[dict(type="TextLoggerHook"), dict(type="TensorboardLoggerHook")]
 )

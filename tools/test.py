@@ -7,17 +7,16 @@ import os
 import warnings
 from mmengine.config import Config, DictAction
 from mmcv.cnn import fuse_conv_bn
-from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
-from mmcv.runner import (get_dist_info, init_dist, load_checkpoint,
-                         wrap_fp16_model)
+from mmengine.model import MMDistributedDataParallel
+from mmengine.dist import get_dist_info, init_dist
+from mmengine.runner import load_checkpoint
 
-from mmdet3d.apis import single_gpu_test
-from mmdet3d.datasets import build_dataset
+# from mmdet3d.apis import single_gpu_test
+from mmdet3d.registry import DATASETS, MODELS
 from projects.mmdet3d_plugin.datasets.builder import build_dataloader
-from mmdet3d.models import build_model
-from mmdet.apis import set_random_seed
+from mmengine.runner import set_random_seed
 from projects.mmdet3d_plugin.uniad.apis.test import custom_multi_gpu_test
-from mmdet.datasets import replace_ImageToTensor
+from mmcv.transforms import Compose
 import time
 import os.path as osp
 
@@ -164,7 +163,7 @@ def main():
         samples_per_gpu = cfg.data.test.pop('samples_per_gpu', 1)
         if samples_per_gpu > 1:
             # Replace 'ImageToTensor' to 'DefaultFormatBundle'
-            cfg.data.test.pipeline = replace_ImageToTensor(
+            cfg.data.test.pipeline = Compose(
                 cfg.data.test.pipeline)
     elif isinstance(cfg.data.test, list):
         for ds_cfg in cfg.data.test:
@@ -173,7 +172,7 @@ def main():
             [ds_cfg.pop('samples_per_gpu', 1) for ds_cfg in cfg.data.test])
         if samples_per_gpu > 1:
             for ds_cfg in cfg.data.test:
-                ds_cfg.pipeline = replace_ImageToTensor(ds_cfg.pipeline)
+                ds_cfg.pipeline = Compose(ds_cfg.pipeline)
 
     # init distributed env first, since logger depends on the dist info.
     if args.launcher == 'none':
@@ -187,7 +186,7 @@ def main():
         set_random_seed(args.seed, deterministic=args.deterministic)
 
     # build the dataloader
-    dataset = build_dataset(cfg.data.test)
+    dataset = DATASETS.build(cfg.data.test)
     data_loader = build_dataloader(
         dataset,
         samples_per_gpu=samples_per_gpu,
@@ -199,10 +198,11 @@ def main():
 
     # build the model and load checkpoint
     cfg.model.train_cfg = None
-    model = build_model(cfg.model, test_cfg=cfg.get('test_cfg'))
-    fp16_cfg = cfg.get('fp16', None)
-    if fp16_cfg is not None:
-        wrap_fp16_model(model)
+    model = MODELS.build(cfg.model, test_cfg=cfg.get('test_cfg'))
+    # TODO: enable fp16 autocast
+    # fp16_cfg = cfg.get('fp16', None)
+    # if fp16_cfg is not None:
+    #     wrap_fp16_model(model)
     checkpoint = load_checkpoint(model, args.checkpoint, map_location='cpu')
     if args.fuse_conv_bn:
         model = fuse_conv_bn(model)
