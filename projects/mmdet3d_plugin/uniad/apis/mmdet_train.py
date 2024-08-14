@@ -106,8 +106,12 @@ def custom_train_detector(model,
         checkpoint=dict(type='CheckpointHook', interval=cfg.checkpoint_config.interval),
     )
 
+    if distributed:
+        if isinstance(runner, Runner):
+            cfg['default_hooks']['sampler_seed'] = dict(type='DistSamplerSeedHook')
+
     # build the runner from config
-    if 'runner_type' not in cfg:
+    if 'runner' not in cfg:
         cfg.runner = {
             'type': 'Runner',
             'max_epochs': cfg.total_epochs
@@ -116,38 +120,18 @@ def custom_train_detector(model,
             'config is now expected to have a `runner` section, '
             'please set `runner` in your config.', UserWarning)
         # build the default runner
-        runner = Runner.from_cfg(cfg)
     else:
         # build customized runner from the registry
         # if 'runner_type' is set in the cfg
-
         if 'total_epochs' in cfg:
             assert cfg.total_epochs == cfg.runner.max_epochs
-        runner = RUNNERS.build(cfg)
 
-    # an ugly workaround to make .log and .log.json filenames the same
-    runner.timestamp = timestamp
-
-    # fp16 setting
-    # TODO: enable fp16
-    # fp16_cfg = cfg.get('fp16', None)
-    # if fp16_cfg is not None:
-    #     optimizer_config = Fp16OptimizerHook(
-    #         **cfg.optimizer_config, **fp16_cfg, distributed=distributed)
-    # if distributed and 'type' not in cfg.optimizer_config:
-    #     optimizer_config = OptimizerHook(**cfg.optimizer_config)
-    # else:
-    #     optimizer_config = cfg.optimizer_config
-
-    
-    # register profiler hook
-    #trace_config = dict(type='tb_trace', dir_name='work_dir')
-    #profiler_config = dict(on_trace_ready=trace_config)
-    #runner.register_profiler_hook(profiler_config)
-    
-    if distributed:
-        if isinstance(runner, Runner):
-            runner.register_hook(DistSamplerSeedHook())
+    if cfg.resume_from and os.path.exists(cfg.resume_from):
+        cfg['load_from'] = cfg.resume_from
+        cfg['resume'] = True
+    elif cfg.load_from:
+        cfg['load_from'] = cfg.load_from
+        cfg['resume'] = False
 
     # register eval hooks
     if validate:
@@ -169,30 +153,53 @@ def custom_train_detector(model,
             shuffler_sampler=cfg.data.shuffler_sampler,  # dict(type='DistributedGroupSampler'),
             nonshuffler_sampler=cfg.data.nonshuffler_sampler,  # dict(type='DistributedSampler'),
         )
-        eval_cfg = cfg.get('evaluation', {})
-        eval_cfg['by_epoch'] = cfg.runner['type'] != 'IterBasedRunner'
-        eval_cfg['jsonfile_prefix'] = osp.join('val', cfg.work_dir, time.ctime().replace(' ','_').replace(':','_'))
-        # eval_hook = CustomDistEvalHook if distributed else EvalHook
-        # runner.register_hook(eval_hook(val_dataloader, **eval_cfg))
+        
+        cfg['val_dataloader'] = val_dataloader
+        cfg['val_evaluator'] = dict(type='ToyAccuracyMetric')
+        cfg['val_cfg'] = dict(type='ValLoop')
 
-    # user-defined hooks
-    if cfg.get('custom_hooks', None):
-        custom_hooks = cfg.custom_hooks
-        assert isinstance(custom_hooks, list), \
-            f'custom_hooks expect list type, but got {type(custom_hooks)}'
-        for hook_cfg in cfg.custom_hooks:
-            assert isinstance(hook_cfg, dict), \
-                'Each item in custom_hooks expects dict type, but got ' \
-                f'{type(hook_cfg)}'
-            hook_cfg = hook_cfg.copy()
-            priority = hook_cfg.pop('priority', 'NORMAL')
-            hook = build_from_cfg(hook_cfg, HOOKS)
-            runner.register_hook(hook, priority=priority)
+    if 'runner_type' not in cfg:
+        # build the default runner
+        runner = Runner.from_cfg(cfg)
+    else:
+        # build customized runner from the registry
+        # if 'runner_type' is set in the cfg
+        runner = RUNNERS.build(cfg)
 
-    if cfg.resume_from and os.path.exists(cfg.resume_from):
-        runner.resume(cfg.resume_from)
-    elif cfg.load_from:
-        runner.load_checkpoint(cfg.load_from)
+    # an ugly workaround to make .log and .log.json filenames the same
+    runner.timestamp = timestamp
+
+    # fp16 setting
+    # TODO: enable fp16
+    # fp16_cfg = cfg.get('fp16', None)
+    # if fp16_cfg is not None:
+    #     optimizer_config = Fp16OptimizerHook(
+    #         **cfg.optimizer_config, **fp16_cfg, distributed=distributed)
+    # if distributed and 'type' not in cfg.optimizer_config:
+    #     optimizer_config = OptimizerHook(**cfg.optimizer_config)
+    # else:
+    #     optimizer_config = cfg.optimizer_config
+
+    
+    # register profiler hook
+    #trace_config = dict(type='tb_trace', dir_name='work_dir')
+    #profiler_config = dict(on_trace_ready=trace_config)
+    #runner.register_profiler_hook(profiler_config)
+
+    # # user-defined hooks
+    # TODO: enable user-defined hooks
+    # if cfg.get('custom_hooks', None):
+    #     custom_hooks = cfg.custom_hooks
+    #     assert isinstance(custom_hooks, list), \
+    #         f'custom_hooks expect list type, but got {type(custom_hooks)}'
+    #     for hook_cfg in cfg.custom_hooks:
+    #         assert isinstance(hook_cfg, dict), \
+    #             'Each item in custom_hooks expects dict type, but got ' \
+    #             f'{type(hook_cfg)}'
+    #         hook_cfg = hook_cfg.copy()
+    #         priority = hook_cfg.pop('priority', 'NORMAL')
+    #         hook = build_from_cfg(hook_cfg, HOOKS)
+    #         runner.register_hook(hook, priority=priority)
+
     # runner.run(data_loaders, cfg.workflow)
     runner.train()
-

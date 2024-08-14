@@ -8,7 +8,7 @@ import time
 import mmcv
 import torch
 import torch.distributed as dist
-from mmcv.runner import get_dist_info
+from mmengine.dist import get_dist_info
 
 from ..dense_heads.occ_head_plugin import IntersectionOverUnion, PanopticMetric
 from ..dense_heads.planning_head_plugin import PlanningMetric
