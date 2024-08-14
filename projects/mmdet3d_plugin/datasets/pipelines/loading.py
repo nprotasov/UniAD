@@ -1,5 +1,6 @@
 import numpy as np
 import mmcv
+from mmengine.fileio import FileClient
 from mmdet.registry import TRANSFORMS
 from einops import rearrange
 from mmdet3d.datasets.transforms.loading import LoadAnnotations3D
@@ -21,7 +22,7 @@ class LoadMultiViewImageFromFilesInCeph(object):
         self.to_float32 = to_float32
         self.color_type = color_type
         self.file_client_args = file_client_args.copy()
-        self.file_client = mmcv.FileClient(**self.file_client_args)
+        self.file_client = FileClient(**self.file_client_args)
         self.img_root = img_root
 
     def __call__(self, results):

@@ -8,6 +8,7 @@ import copy
 import numpy as np
 import torch
 import mmcv
+from mmengine.fileio import FileClient
 from mmengine.registry import DATASETS #TODO not sure, that it is equvivalent
 from mmcv.transforms import to_tensor
 from mmdet3d.datasets import NuScenesDataset
@@ -72,7 +73,7 @@ class NuScenesE2EDataset(NuScenesDataset):
                  **kwargs):
         # init before super init since it is called in parent class
         self.file_client_args = file_client_args
-        self.file_client = mmcv.FileClient(**file_client_args)
+        self.file_client = FileClient(**file_client_args)
 
         self.is_debug = is_debug
         self.len_debug = len_debug
